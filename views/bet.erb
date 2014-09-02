@@ -1,7 +1,5 @@
 <h3>How much <%= session[:player_name] %> want to bet?</h3>
-<p>
-  ( the amount of chips is $<%= session[:player_chips_amount] %> )
-</p>
+<p><strong>( the amount of chips is $<%= session[:player_chips_amount] %> )</strong></p>
 <form action="/bet" method="post">
   <input type="text" name="bet">
   <input type="submit" class="btn btn-primary" value="Bet">
