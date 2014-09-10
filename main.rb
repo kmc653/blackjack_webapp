@@ -50,14 +50,14 @@ helpers do
   def winner!(msg)
     @play_again = true
     @show_hit_or_stay_bottons = false
-    @success = "<strong>#{session[:player_name]} wins!</strong> #{msg} You win $#{session[:player_bet]}"
+    @winner = "<strong>#{session[:player_name]} wins!</strong> #{msg} You win $#{session[:player_bet]}"
     session[:player_chips_amount] += session[:player_bet]
   end
 
   def loser!(msg)
     @show_hit_or_stay_bottons = false
     session[:player_chips_amount] -= session[:player_bet]
-    @error = "<strong>#{session[:player_name]} loses...</strong> #{msg} You lose $#{session[:player_bet]}"
+    @loser = "<strong>#{session[:player_name]} loses...</strong> #{msg} You lose $#{session[:player_bet]}"
 
     if session[:player_chips_amount] <= 0
       @no_more_chips = true
@@ -69,7 +69,7 @@ helpers do
   def tie!(msg)
     @play_again = true
     @show_hit_or_stay_bottons = false
-    @success = "<strong>It's a tie!</strong> #{msg}"
+    @winner = "<strong>It's a tie!</strong> #{msg}"
   end
 
 end
@@ -91,30 +91,31 @@ post '/' do
 
   session[:player_name] = params[:player_name]
   #redirect '/game'
-  redirect '/bet'
+  redirect '/place_bet'
 end
 
-get '/bet' do
+get '/place_bet' do
   session[:player_bet] = nil
   erb :bet
 end
 
-post '/bet' do
-  if params[:bet].empty? || params[:bet].to_i == 0
+post '/place_bet' do
+  bet_amount = params[:bet]
+  if bet_amount.empty? || bet_amount.to_i == 0
     @error = "Must bet some money."
     halt erb(:bet)
-  elsif params[:bet].to_i > session[:player_chips_amount]
+  elsif bet_amount.to_i > session[:player_chips_amount]
     @error = "The greatest amount of chips you can bet is $#{session[:player_chips_amount]}"
     halt erb(:bet)
   else
-    session[:player_bet] = params[:bet].to_i
+    session[:player_bet] = bet_amount.to_i
     redirect '/game'
   end
 end
 
 post '/bet/change' do
   session[:player_chips_amount] = CHIPS_AMOUNT
-  redirect '/bet'
+  redirect '/place_bet'
 end
 
 get '/game' do
@@ -150,7 +151,7 @@ post '/game/player/hit' do
     loser!("#{session[:player_name]} busted at #{player_total}.")
   end
 
-  erb :game
+  erb :game, layout: false
 end
 
 post '/game/player/stay' do
@@ -178,7 +179,7 @@ get '/game/dealer' do
     @press_dealing = true
   end
 
-  erb :game
+  erb :game, layout: false
 end
 
 post '/game/dealer/hit' do
@@ -200,7 +201,7 @@ get '/game/compare' do
     tie!("Both #{session[:player_name]} and the dealer stayed at #{player_total}.")
   end
 
-  erb :game
+  erb :game, layout: false
 end
 
 get '/game_over' do

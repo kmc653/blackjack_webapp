@@ -1,3 +1,12 @@
+<div id="game">
+
+<%if @loser %>
+      <div class="alert alert-error"><%=@loser%></div>
+    <% end %>
+    <%if @winner %>
+      <div class="alert alert-success"><%=@winner%></div>
+    <% end %>
+
 <h1>Blackjack Game</h1>
 
 <p><strong>Welcome <%= session[:player_name] %>.</strong></p>
@@ -5,7 +14,7 @@
 <% if @play_again %>
   <p>
     <strong>Play again?</strong>
-    <a href="/bet" class="btn btn-primary">Yes</a>
+    <a href="/place_bet" class="btn btn-primary">Yes</a>
     <a href="/game_over" class="btn">No</a>
   </p>
 <% end %> 
@@ -33,7 +42,7 @@
   <% if @press_dealing %>
     <p>
       <h5>Dealer has <%= calculate_total(session[:dealer_cards])%> and will hit.</h5>
-      <form action='/game/dealer/hit' method='post'>
+      <form action='/game/dealer/hit' method='post' id='dealer'>
         <input type='submit' class='btn btn-info' value='Dealing'>
       </form>
     </p>
@@ -44,10 +53,14 @@
 <br/>
 
 <div class="well">
-<h4><%= session[:player_name]%>'s cards:</h4>
+  <h4><%= session[:player_name]%>'s cards:</h4>
   <% session[:player_cards].each do |card| %>
     <%= card_image(card) %>
   <% end %>
+
+  <h5>
+    <%= session[:player_name] %> has $<%= session[:player_chips_amount] %> and bet $<%= session[:player_bet] %> this round.
+  </h5>
 </div>
 
 <p>
@@ -63,3 +76,4 @@
     </form>
   <% end %>
 </p>
+</div>
